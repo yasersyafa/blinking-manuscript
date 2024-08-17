@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1045 &1
+EditorBuildSettings:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Scenes:
+  - enabled: 1
+    path: Assets/Scenes/Main Menu.unity
+    guid: 9635eff6e5db9413fb152c6ae640d643
+  - enabled: 1
+    path: Assets/Scenes/Cutscene Intro.unity
+    guid: c4462826341ae4a079674b31406ed17d
+  - enabled: 1
+    path: Assets/Scenes/Main Scene.unity
+    guid: e0c725baaf0ef4947a4f011974677c64
+  - enabled: 1
+    path: Assets/Scenes/Mindblink1.unity
+    guid: 8c9cfa26abfee488c85f1582747f6a02
+  - enabled: 1
+    path: Assets/Scenes/Mindblink2.unity
+    guid: dceaeb5883468471f95c4c82421b7f80
+  - enabled: 1
+    path: Assets/Scenes/Transition Day.unity
+    guid: 58ed472d1e1534a0280b51a461338f09
+  - enabled: 1
+    path: Assets/Scenes/Mindblink3.unity
+    guid: 41efaec603a9f467ca440b3994637b6e
+  - enabled: 1
+    path: Assets/Scenes/Outside.unity
+    guid: 8615ae8e925eb4c248973027799c20d0
+  - enabled: 1
+    path: Assets/Scenes/Cutscene Ending.unity
+    guid: c85f2ba00ff7d491da5ed315adf746b8
+  m_configObjects: {}
