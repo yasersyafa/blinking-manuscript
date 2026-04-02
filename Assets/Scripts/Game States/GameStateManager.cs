@@ -64,7 +64,7 @@ public class GameStateManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        currentState = day2;
+        currentState = computerScene;
         currentState?.OnEnter(this);
     }
 
