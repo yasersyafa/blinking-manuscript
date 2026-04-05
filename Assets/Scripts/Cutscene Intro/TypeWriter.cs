@@ -1,59 +1,87 @@
-using System.Collections;
-using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
+using TMPro;
+using System.Collections;
 
 [RequireComponent(typeof(AudioSource))]
 public class TypeWriter : MonoBehaviour
 {
-    private TextMeshProUGUI textMesh;
-    [TextArea(3, 10)]public string fullText = "Humans often grapple with fleeting memories and unexpected bursts of inspiration. Sometimes, ideas come to us in the most peculiar places—whether it’s in a mundane moment or an ordinary setting. This strange phenomenon, where creativity strikes out of the blue, is known as... Mindblink.";
-    private float delay = 0.05f;
-    private AudioSource audioSource;
+    private TextMeshProUGUI _textMesh;
+    private AudioSource _audioSource;
     public AudioClip[] clips;
 
-    // Start is called before the first frame update
+    [TextArea(3, 10)]
+    public string fullText = "Humans often grapple with fleeting memories...";
+    private const float LetterDelay = 0.05f;
+
+    [Header("Scene Config")]
+    public string sceneToLoadAfter = "";
+
     void Start()
     {
-        audioSource = GetComponent<AudioSource>();
-        textMesh = GetComponent<TextMeshProUGUI>();
-        if(GameStateManager.Ins != null && GameStateManager.Ins.currentState == GameStateManager.Ins.day3) fullText = "The next day...";
+        _audioSource = GetComponent<AudioSource>();
+        _textMesh = GetComponent<TextMeshProUGUI>();
+        OverrideTextIfNeeded();
         StartCoroutine(TypeText());
+    }
+
+    private void OverrideTextIfNeeded()
+    {
+        if (GameStateManager.Ins == null) return;
+        if (GameStateManager.Ins.currentState == GameStateManager.Ins.day3)
+            fullText = "The next day...";
     }
 
     private IEnumerator TypeText()
     {
-        textMesh.text = "";
-        yield return new WaitForSeconds(1f);
-        
+        // Set teks penuh dari awal, semua karakter disembunyikan dulu
+        _textMesh.text = fullText;
+        _textMesh.maxVisibleCharacters = 0;
 
-        foreach(char c in fullText)
-        {
-            AudioClip newClip = GetRandomClips();
-            textMesh.text += c;
-            audioSource.PlayOneShot(newClip);
-            yield return new WaitForSeconds(delay);
-        }
-        if(GameStateManager.Ins != null)
-        {
-            if(GameStateManager.Ins.currentState == GameStateManager.Ins.day2)
-            {
-                GameStateManager.Ins.day2.isMainScene = true;
-            }
-            else if(GameStateManager.Ins.currentState == GameStateManager.Ins.day3)
-            {
-                GameStateManager.Ins.day3.isMainScene = true;
-            }
-        }
         yield return new WaitForSeconds(1f);
-        // pindah scene
-        SceneController.Ins.LoadScene("Main Scene");
+
+        // Force rebuild supaya TMP tahu total karakter yang ada
+        _textMesh.ForceMeshUpdate();
+        int totalChars = _textMesh.textInfo.characterCount;
+
+        for (int i = 0; i <= totalChars; i++)
+        {
+            _textMesh.maxVisibleCharacters = i;
+
+            // Hanya play audio kalau karakter yang muncul bukan spasi
+            if (i > 0)
+            {
+                char current = _textMesh.textInfo.characterInfo[i - 1].character;
+                if (current != ' ')
+                    _audioSource.PlayOneShot(GetRandomClip());
+            }
+
+            yield return new WaitForSeconds(LetterDelay);
+        }
+
+        yield return new WaitForSeconds(1f);
+        OnTypeWriterFinished();
     }
 
-    public AudioClip GetRandomClips()
+    private void OnTypeWriterFinished()
     {
-        int index = Random.Range(0, clips.Length);
-        AudioClip newClip = clips[index];
-        return newClip;
+        if (GameStateManager.Ins != null &&
+            GameStateManager.Ins.currentState is ITypeWriterHandler handler)
+        {
+            handler.OnTypeWriterFinished(GameStateManager.Ins);
+            return;
+        }
+
+        if (!string.IsNullOrEmpty(sceneToLoadAfter))
+        {
+            SceneController.Ins.LoadScene(sceneToLoadAfter);
+            return;
+        }
+
+        Debug.LogWarning("[TypeWriter] Tidak ada handler dan sceneToLoadAfter kosong!");
+    }
+
+    private AudioClip GetRandomClip()
+    {
+        return clips[Random.Range(0, clips.Length)];
     }
 }

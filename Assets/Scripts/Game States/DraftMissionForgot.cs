@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class DraftMissionForgot : IState
+public class DraftMissionForgot : IState, ICalendarHandler
 {
     private Dialogue dialogue;
     public bool isDone;
@@ -12,6 +12,7 @@ public class DraftMissionForgot : IState
     {
         dialogue = GameObject.Find("DraftForgot").GetComponent<Dialogue>();
         isDone = false;
+        countdown = .3f;
     }
 
     public void OnExecute(GameStateManager manager)
@@ -31,5 +32,17 @@ public class DraftMissionForgot : IState
     public void OnExit(GameStateManager manager)
     {
         
+    }
+
+    public void OnCalendarClicked(GameStateManager manager)
+    {
+        var obj = GameObject.Find("CalendarDialogue");
+        if (obj == null)
+        {
+            Debug.LogError("[DraftMissionForgot] 'CalendarDialogue' tidak ditemukan!");
+            return;
+        }
+        obj.GetComponent<Dialogue>()?.TriggerDialogue();
+        hasClickedCalendar = true;
     }
 }

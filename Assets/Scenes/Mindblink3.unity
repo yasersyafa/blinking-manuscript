@@ -549,7 +549,6 @@ GameObject:
   m_Component:
   - component: {fileID: 630625884}
   - component: {fileID: 630625885}
-  - component: {fileID: 630625886}
   m_Layer: 0
   m_Name: Mindblink3 Manager
   m_TagString: Untagged
@@ -592,23 +591,6 @@ MonoBehaviour:
   textToType: {fileID: 1488010057}
   timeRemaining: 100
   caretBlinkInterval: 0.53
---- !u!114 &630625886
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 630625883}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 80e0df143748045058a18a219ab5a39f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  paragraph: the shadows of the past lingered, casting doubts on everything he thought
-    he knew. in the silence that followed, memories began to resurface, fragments
-    of a truth he had long tried to forget. as the clock struck midnight, he realized
-    that the line between reality and delusion had already started to blur.
-  textGenerator: {fileID: 1488010057}
 --- !u!1 &678581486
 GameObject:
   m_ObjectHideFlags: 0

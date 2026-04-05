@@ -14,10 +14,14 @@ public class DialogueManager : MonoBehaviour
     public Image characterIcon;
     [HideInInspector] public bool isDone = true;
     private Queue<DialogueLine> lines;
+
+    private void Awake()
+    {
+        if (ins == null) ins = this;
+    }
     
     void Start()
     {
-        ins = this;
         lines = new Queue<DialogueLine>();
     }
 
@@ -62,25 +66,27 @@ public class DialogueManager : MonoBehaviour
 
     IEnumerator TypeSentence(string sentence)
     {
-        
+        bool insideTag = false;
         bool isBold = false;
         dialogueText.text = "";
         foreach(char c in sentence)
         {
             AudioClip clip = GetRandomClips();
             dialogueText.text += c;
-            keyboardSource.PlayOneShot(clip);
             if(c == '<')
             {
+                insideTag = true;
                 isBold = true;
             }
             else if(c == '>')
             {
+                insideTag = false;
                 isBold = false;
             }
 
-            if(!isBold)
+            if(!insideTag || !isBold)
             {
+                keyboardSource.PlayOneShot(clip);
                 yield return new WaitForSeconds(0.03f);
             }
         }

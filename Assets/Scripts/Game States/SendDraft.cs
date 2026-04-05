@@ -1,53 +1,48 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
-public class SendDraft : IState
+public class SendDraft : SceneLoadState
 {
-    private bool isActive = false;
-    private bool isDone = false;
+    protected override string TargetScene => "Main Scene";
+    protected override float DelayAfterLoad => 0.5f;
     public bool isCorrectDraft = false;
-    public void OnEnter(GameStateManager manager)
-    {
-        SceneController.Ins.LoadScene("Main Scene");
-    }
+    private bool _isDone = false;
 
-    public void OnExecute(GameStateManager manager)
-    {
-        if(SceneManager.GetActiveScene().name == "Main Scene" && !isActive)
-        {
-            OnActiveScene();
-            isActive = true;
-        }
-        if(isCorrectDraft && !isDone)
-        {
-            Dialogue dialogue = GameObject.Find("DraftSendComplete").GetComponent<Dialogue>();
-            isDone = true;
-            dialogue.TriggerDialogue();
-        }
-        if(isDone && DialogueManager.ins.isDone)
-        {
-            // next state cutscene
-            manager.SetState(manager.day2);
-        }
-    }
-
-    public void OnExit(GameStateManager manager)
-    {
-        
-    }
-
-    private void OnActiveScene()
+    protected override void OnSceneReady(GameStateManager manager)
     {
         MainSceneManager.ins.canvasFocused.SetActive(false);
         MainSceneManager.ins.canvasTable.SetActive(false);
         MainSceneManager.ins.lockScreen.SetActive(false);
         MainSceneManager.ins.screenLocked.SetActive(false);
-
         MainSceneManager.ins.mxWriter.SetActive(false);
         MainSceneManager.ins.MxWriter.SetActive(false);
         MainSceneManager.ins.FileManager.SetActive(true);
         MainSceneManager.ins.fileManager.SetActive(true);
+    }
+
+    public override void OnExecute(GameStateManager manager)
+    {
+        base.OnExecute(manager); // handle scene load + delay
+
+        if (isCorrectDraft && !_isDone)
+        {
+            _isDone = true;
+            var obj = GameObject.Find("DraftSendComplete");
+            if (obj == null)
+            {
+                Debug.LogError("[SendDraft] 'DraftSendComplete' tidak ditemukan!");
+                return;
+            }
+            obj.GetComponent<Dialogue>()?.TriggerDialogue();
+        }
+
+        if (_isDone && DialogueManager.ins.isDone)
+            manager.SetState(manager.day2);
+    }
+
+    public override void OnExit(GameStateManager manager)
+    {
+        base.OnExit(manager); // wajib panggil base untuk unsubscribe
+        _isDone = false;
+        isCorrectDraft = false;
     }
 }

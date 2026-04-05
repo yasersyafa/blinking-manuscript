@@ -65,137 +65,52 @@ public class MainSceneManager : MonoBehaviour
         doorBathroom.onClick.AddListener(() => BackToRoom());
         sinkButton.onClick.AddListener(() => SinkClicked());
     }
+    
     public void ShutdownComputer()
     {
-        if(GameStateManager.Ins.currentState == GameStateManager.Ins.computerScene)
-        {
-            lockScreen.SetActive(true);
-            shutdownScreen.SetActive(true);
-            screenLocked.SetActive(true);
-            screenShutdown.SetActive(true);
-            // pindah state ke telephone 1
-            GameStateManager.Ins.SetState(GameStateManager.Ins.callOne);
-        }
-        else if(GameStateManager.Ins.currentState == GameStateManager.Ins.publisherTwo)
-        {
-            
-            shutdownScreen.SetActive(false);
-            screenShutdown.SetActive(false);
-            GameStateManager.Ins.SetState(GameStateManager.Ins.forgotPassword);
-        }
-        else if(GameStateManager.Ins.currentState == GameStateManager.Ins.endingBegin)
-        {
-            GameStateManager.Ins.SetState(GameStateManager.Ins.mindblink3);
-        }
-        else if(GameStateManager.Ins.currentState == GameStateManager.Ins.endingCompleted)
-        {
-            // next state
-            GameStateManager.Ins.SetState(GameStateManager.Ins.day3);
-        }
-        // else if(GameStateManager.Ins.currentState == GameStateManager.Ins.day2)
-        // {
-        //     shutdownScreen.SetActive(false);
-        //     screenShutdown.SetActive(false);
-        // }
+        if (GameStateManager.Ins.currentState is IShutdownHandler handler)
+            handler.OnShutdownClicked(GameStateManager.Ins);
         else
-        {
             ErrorDialogue("You", "There is something I want to do it right now");
-            
+    }
+
+    public void EnterPassword()
+    {
+        if (GameStateManager.Ins.currentState != GameStateManager.Ins.getPassword)
+        {
+            ErrorDialogue("You", "I don't even know the password.");
+            return;
         }
+
+        if (string.IsNullOrEmpty(passwordField.text) ||
+            passwordField.text != GameStateManager.Ins.passwordPC)
+        {
+            ErrorDialogue("You", "Hmm, the password is <color=#2567FF>{PASSWORD}</color>... Maybe I typed it wrong.");
+            return;
+        }
+
+        lockScreen.SetActive(false);
+        screenLocked.SetActive(false);
+        MxWriter.SetActive(false);
+        mxWriter.SetActive(false);
+        FileManager.SetActive(false);
+        fileManager.SetActive(false);
+        GameStateManager.Ins.SetState(GameStateManager.Ins.draftMissionBegin);
     }
 
     public void StopShakingPhone()
     {
         SoundEffect.Ins.audioSource.Stop();
-        GameObject effect = handphone.transform.GetChild(handphone.transform.childCount - 1).gameObject;
-        if(GameStateManager.Ins.callOne.isDone)
-        {
-            effect.SetActive(false);
-            GameStateManager.Ins.callOne.isShaking = false;
-        }
-        if(GameStateManager.Ins.currentState == GameStateManager.Ins.callTwo)
-        {
-            effect.SetActive(false);
-            GameStateManager.Ins.callTwo.isShaking = false;
-        }
-        else 
-        {
-            // ErrorDialogue("You", "Nobody calls you");
-        }
-    }
-
-    public void InputPlayerName()
-    {
-        
-        if(GameStateManager.Ins.currentState == GameStateManager.Ins.inputNamePlayer)
-        {
-            GameStateManager.Ins.playerName = inputField.text;
-            GameStateManager.Ins.inputNamePlayer.isFilled = true;
-        }
-    }
-
-    public void EnterPassword()
-    {
-        if(GameStateManager.Ins.currentState == GameStateManager.Ins.getPassword)
-        {
-            if(string.IsNullOrEmpty(passwordField.text))
-            {
-                ErrorDialogue("You", "Oh No! The password is incorrect");
-            }
-            else
-            {
-                if(passwordField.text != GameStateManager.Ins.passwordPC)
-                {
-                    ErrorDialogue("You", "Hmm, the password is <color=#2567FF>{PASSWORD}</color>... Maybe I typed it wrong.");
-                }
-                else
-                {
-                    // false active locked screen
-                    lockScreen.SetActive(false);
-                    screenLocked.SetActive(false);
-                    // set active all apps
-                    MxWriter.SetActive(false);
-                    mxWriter.SetActive(false);
-                    FileManager.SetActive(false);
-                    fileManager.SetActive(false);
-                    GameStateManager.Ins.SetState(GameStateManager.Ins.draftMissionBegin);
-                }
-            }
-        }
-        // else if(GameStateManager.Ins.currentState == GameStateManager.Ins.getPassword)
-        // {
-        //     if(passwordField.text != GameStateManager.Ins.passwordPC)
-        //     {
-        //         ErrorDialogue("You", "Hmm, the password is <color=#2567FF>{PASSWORD}</color>... Maybe I typed it wrong.");
-        //     }
-        //     else
-        //     {
-        //         // false active locked screen
-        //         lockScreen.SetActive(false);
-        //         screenLocked.SetActive(false);
-        //         // set active all apps
-        //         MxWriter.SetActive(false);
-        //         mxWriter.SetActive(false);
-        //         FileManager.SetActive(false);
-        //         fileManager.SetActive(false);
-        //     }
-        // }
-        else
-        {
-            ErrorDialogue("You", "I don't even know the password. Maybe I should go to the <color=#2567FF>bathroom</color>.");
-        }
+        if (GameStateManager.Ins.currentState is IPhoneHandler handler)
+            handler.OnPhoneStopClicked(GameStateManager.Ins);
     }
 
     public void GoToBathroom()
     {
-        if(GameStateManager.Ins.currentState == GameStateManager.Ins.forgotPassword)
-        {
-            bgBathroom.SetActive(true);
-        }
-        else 
-        {
+        if (GameStateManager.Ins.currentState is IBathroomHandler handler)
+            handler.OnBathroomClicked(GameStateManager.Ins);
+        else
             ErrorDialogue("You", "I don't want to go bathroom");
-        }
     }
 
     public void BackToRoom()
@@ -205,19 +120,22 @@ public class MainSceneManager : MonoBehaviour
 
     public void SinkClicked()
     {
-        if(GameStateManager.Ins.currentState == GameStateManager.Ins.forgotPassword)
-        {
-            GameStateManager.Ins.SetState(GameStateManager.Ins.bathroom1);
-        }
+        if (GameStateManager.Ins.currentState is ISinkHandler handler)
+            handler.OnSinkClicked(GameStateManager.Ins);
+    }
+
+    public void FileManagerClicked()
+    {
+        if (GameStateManager.Ins.currentState is IFileManagerHandler handler)
+            handler.OnFileManagerClicked(GameStateManager.Ins);
     }
 
     public void GoOutside()
     {
-        if(GameStateManager.Ins.currentState == GameStateManager.Ins.outside1)
-        {
+        if (GameStateManager.Ins.currentState == GameStateManager.Ins.outside1)
             SceneController.Ins.LoadScene("Outside");
-        }
-        else ErrorDialogue("You", "Not right now <color=#2567FF>{PLAYER_NAME}</color>. finish your job first");
+        else
+            ErrorDialogue("You", "Not right now. Finish your job first.");
     }
 
     public void ErrorDialogue(string name, string sentence)
@@ -238,36 +156,21 @@ public class MainSceneManager : MonoBehaviour
         else Debug.Log("not done");
     }
 
-    public void FileManagerClicked()
-    {
-        if(GameStateManager.Ins.currentState == GameStateManager.Ins.draftMissionBegin)
-        {
-            GameStateManager.Ins.draftMissionBegin.isFileManager = true;
-        }
-    }
-
     public void CalendarClicked()
     {
-        if(GameStateManager.Ins.currentState == GameStateManager.Ins.draftMissionForgot)
-        {
-            Dialogue dialogue = GameObject.Find("CalendarDialogue").GetComponent<Dialogue>();
-            if(dialogue != null)
-            {
-                dialogue.TriggerDialogue();
-                GameStateManager.Ins.draftMissionForgot.hasClickedCalendar = true;
-            }
-            // GameStateManager.Ins.SetState(GameStateManager.Ins.mindblink2);
-            // next state
-            // Dialogue dialogue = GameObject.Find("Calendar").GetComponent<Dialogue>();
-            // dialogue.TriggerDialogue();
-            // // if(DialogueManager.ins.isDone)
-            // // {
-            // //     
-            // // }
-        }
-        else 
-        {
+        if (GameStateManager.Ins.currentState is ICalendarHandler handler)
+            handler.OnCalendarClicked(GameStateManager.Ins);
+        else
             ErrorDialogue("You", "What am I supposed to see the calendar?");
+    }
+
+    public void InputPlayerName()
+    {
+        if (GameStateManager.Ins.currentState is IState &&
+            GameStateManager.Ins.currentState == GameStateManager.Ins.inputNamePlayer)
+        {
+            GameStateManager.Ins.playerName = inputField.text;
+            GameStateManager.Ins.inputNamePlayer.isFilled = true;
         }
     }
 

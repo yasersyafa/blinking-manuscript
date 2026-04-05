@@ -1,36 +1,40 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
-public class Mindblink2 : IState
+public class Mindblink2 : SceneLoadState
 {
+    protected override string TargetScene => "Mindblink2";
+    protected override float DelayAfterLoad => 0f; // langsung setelah scene ready
+
     public bool isComplete = false;
-    public bool isDone;
-    private Dialogue dialogue;
-    public void OnEnter(GameStateManager manager)
+
+    public override void OnEnter(GameStateManager manager)
     {
-        SceneController.Ins.LoadScene("Mindblink2");
-        
-        isDone = false;
+        isComplete = false;
+        base.OnEnter(manager);
     }
 
-    public void OnExecute(GameStateManager manager)
+    protected override void OnSceneReady(GameStateManager manager)
     {
-        if(!isDone && SceneManager.GetActiveScene().name == "Mindblink2")
+        var obj = GameObject.Find("Mindblink2");
+        if (obj == null)
         {
-            isDone = true;
-            dialogue = GameObject.Find("Mindblink2").GetComponent<Dialogue>();
-            dialogue.TriggerDialogue();
+            Debug.LogError("[Mindblink2] 'Mindblink2' tidak ditemukan!");
+            return;
         }
-        if(isComplete)
-        {
+        obj.GetComponent<Dialogue>()?.TriggerDialogue();
+    }
+
+    public override void OnExecute(GameStateManager manager)
+    {
+        base.OnExecute(manager);
+
+        if (isComplete)
             manager.SetState(manager.draftMissionComplete);
-        }
     }
 
-    public void OnExit(GameStateManager manager)
+    public override void OnExit(GameStateManager manager)
     {
-        
+        base.OnExit(manager);
+        isComplete = false;
     }
 }

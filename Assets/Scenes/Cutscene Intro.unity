@@ -611,14 +611,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e99607896f1f240febebf7723de03ee1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  fullText: "Humans often grapple with fleeting memories and unexpected bursts of
-    inspiration. Sometimes, ideas come to us in the most peculiar places\u2014whether
-    it\u2019s in a mundane moment or an ordinary setting. This strange phenomenon,
-    where creativity strikes out of the blue, is known as... Mindblink."
   clips:
   - {fileID: 8300000, guid: f0dc3d7ed72b94e9d8aa92284c6bdceb, type: 3}
   - {fileID: 8300000, guid: 91acbc039e5a34cacbaf76932744ecc4, type: 3}
   - {fileID: 8300000, guid: 686a320b12f284cc591c0d3a2fe619dc, type: 3}
+  fullText: "Humans often grapple with fleeting memories and unexpected bursts of
+    inspiration. Sometimes, ideas come to us in the most peculiar places\u2014whether
+    it\u2019s in a mundane moment or an ordinary setting. This strange phenomenon,
+    where creativity strikes out of the blue, is known as... Mindblink."
+  sceneToLoadAfter: Main Scene
 --- !u!82 &754010171
 AudioSource:
   m_ObjectHideFlags: 0

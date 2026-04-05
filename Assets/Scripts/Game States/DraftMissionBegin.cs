@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class DraftMissionBegin : IState
+public class DraftMissionBegin : IState, IFileManagerHandler
 {
     private Dialogue dialogue;
     public bool isFileManager = false;
@@ -23,5 +23,10 @@ public class DraftMissionBegin : IState
     public void OnExit(GameStateManager manager)
     {
         
+    }
+
+    public void OnFileManagerClicked(GameStateManager manager)
+    {
+        manager.SetState(manager.draftMissionForgot);
     }
 }

@@ -1,36 +1,26 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.SceneManagement;
-
-public class DayTwo : IState
+public class DayTwo : SceneLoadState, ITypeWriterHandler
 {
-    public bool isMainScene = false;
-    private float countdown = 1.2f;
-    public void OnEnter(GameStateManager manager)
+    protected override string TargetScene => "Transition Day";
+    protected override float DelayAfterLoad => 1.2f;
+
+    public void OnTypeWriterFinished(GameStateManager manager)
     {
-        SceneController.Ins.LoadScene("Transition Day");
+        manager.SetState(new LoadMainSceneForDay2());
     }
 
-    public void OnExecute(GameStateManager manager)
+    protected override void OnSceneReady(GameStateManager manager)
     {
-        countdown -= Time.deltaTime;
-        if(countdown <= 0)
-        {
-            if(SceneManager.GetActiveScene().name == "Main Scene" && isMainScene)
-            {
-                // on active scene
-                
-                // set next state
-                manager.SetState(manager.computerScene2);
-            }
-        }
+        // manager.SetState(manager.computerScene2);
     }
+}
 
-    public void OnExit(GameStateManager manager)
+public class LoadMainSceneForDay2 : SceneLoadState
+{
+    protected override string TargetScene => "Main Scene";
+    protected override float DelayAfterLoad => 1.2f;
+
+    protected override void OnSceneReady(GameStateManager manager)
     {
-        
+        manager.SetState(manager.computerScene2);
     }
-
-    
 }

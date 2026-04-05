@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PublisherTwo : IState
+public class PublisherTwo : IState, IShutdownHandler
 {
     private Dialogue dialogue1, dialogue2;
     private float countdown;
@@ -33,5 +33,12 @@ public class PublisherTwo : IState
     public void OnExit(GameStateManager manager)
     {
         
+    }
+
+    public void OnShutdownClicked(GameStateManager manager)
+    {
+        MainSceneManager.ins.shutdownScreen.SetActive(false);
+        MainSceneManager.ins.screenShutdown.SetActive(false);
+        manager.SetState(manager.forgotPassword);
     }
 }

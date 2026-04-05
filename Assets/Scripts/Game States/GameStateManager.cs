@@ -48,9 +48,6 @@ public class GameStateManager : MonoBehaviour
     [Header("Error Dialogue")]
     public GameObject errorDialogue;
 
-    
-    
-
     private void Awake()
     {
         if(Ins == null)

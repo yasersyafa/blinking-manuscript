@@ -2,35 +2,24 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ComputerScene : IState
+public class ComputerScene : DelayedDialogueState, IShutdownHandler
 {
-    private Dialogue dialogue;
-    private float duration;
-    private bool isDone;
-
-    private GameStateManager stateManager = GameStateManager.Ins;
-    public void OnEnter(GameStateManager manager)
+    protected override string DialogueObjectName => "ComputerScene";
+    protected override float Delay => 1.3f;
+    
+    public override void OnEnter(GameStateManager manager)
     {
         MainSceneManager.ins.lockScreen.SetActive(false);
         MainSceneManager.ins.screenLocked.SetActive(false);
-        dialogue = GameObject.Find("ComputerScene").GetComponent<Dialogue>();
-        duration = 1.3f;
-        isDone = false;
+        base.OnEnter(manager);
     }
 
-    public void OnExecute(GameStateManager manager)
+    public void OnShutdownClicked(GameStateManager manager)
     {
-        duration -= Time.deltaTime;
-        if(duration <= 0 && !isDone)
-        {
-            isDone = true;
-            dialogue.TriggerDialogue();
-        }
-
-    }
-
-    public void OnExit(GameStateManager manager)
-    {
-        
+        MainSceneManager.ins.lockScreen.SetActive(true);
+        MainSceneManager.ins.shutdownScreen.SetActive(true);
+        MainSceneManager.ins.screenLocked.SetActive(true);
+        MainSceneManager.ins.screenShutdown.SetActive(true);
+        manager.SetState(manager.callOne);
     }
 }

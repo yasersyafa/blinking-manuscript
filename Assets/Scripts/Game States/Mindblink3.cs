@@ -2,38 +2,24 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Mindblink3 : IState
+public class Mindblink3 : DelayedDialogueState
 {
-    private float countdown = 1.3f;
-    Dialogue dialogue;
-    bool isDone;
+    protected override string DialogueObjectName => "Mindblink3";
+    protected override float Delay => 1.3f;
     public bool isWin;
-    public void OnEnter(GameStateManager manager)
+
+    public override void OnEnter(GameStateManager manager)
     {
         SceneController.Ins.LoadScene("Mindblink3");
-        countdown = 1.3f;
-        isDone = false;
         isWin = false;
+        base.OnEnter(manager);
     }
 
-    public void OnExecute(GameStateManager manager)
+    public override void OnExecute(GameStateManager manager)
     {
-        countdown -= Time.deltaTime;
-        if(countdown <= 0 && !isDone)
-        {
-            isDone = true;
-            dialogue = GameObject.Find("Mindblink3").GetComponent<Dialogue>();
-            dialogue.TriggerDialogue();
-        }
+        base.OnExecute(manager);
 
-        if(isWin && DialogueManager.ins.isDone)
-        {
+        if (isWin && DialogueManager.ins.isDone)
             manager.SetState(manager.endingCompleted);
-        }
-    }
-
-    public void OnExit(GameStateManager manager)
-    {
-        
     }
 }

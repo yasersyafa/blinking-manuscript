@@ -2,29 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ChangeEndingBegin : IState
+public class ChangeEndingBegin : DelayedDialogueState, IShutdownHandler
 {
-    Dialogue dialogue;
-    private float countdown = 0.5f;
-    private bool isDone;
-    public void OnEnter(GameStateManager manager)
-    {
-        dialogue = GameObject.Find("You2").GetComponent<Dialogue>();
-        isDone = false;
-    }
+    protected override string DialogueObjectName => "You2";
 
-    public void OnExecute(GameStateManager manager)
-    {
-        countdown -= Time.deltaTime;
-        if(countdown <= 0 && !isDone)
-        {
-            isDone = true;
-            dialogue.TriggerDialogue();
-        }
-    }
+    protected override float Delay => 1f;
 
-    public void OnExit(GameStateManager manager)
+    public void OnShutdownClicked(GameStateManager manager)
     {
-        
+        manager.SetState(manager.mindblink3);
     }
 }
